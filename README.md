@@ -1,4 +1,4 @@
-# Ansible Role: metricbeat
+# Ansible Role: kibana
 
 Ansible Role to install and configure Elastic Kibana for Ubuntu.
 
