@@ -1,0 +1,6 @@
+---
+- name: restart kibana
+  service:
+    name: "{{ kibana_combined.daemon }}"
+    state: restarted
+    sleep: 5

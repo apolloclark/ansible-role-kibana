@@ -1,0 +1,14 @@
+---
+# https://www.elastic.co/guide/en/beats/elasticsearch/current/elasticsearch-overview.html
+# https://www.elastic.co/guide/en/beats/elasticsearch/current/configuring-howto-elasticsearch.html
+# https://www.elastic.co/guide/en/beats/elasticsearch/current/elasticsearch-configuration-options.html
+elastic_url: "https://artifacts.elastic.co"
+
+# Overload variables using the dict named elasticsearch
+kibana:
+  version: "5.x"
+
+kibana_defaults:
+  daemon: "kibana"
+  version: "5.x"
+  config_include_dir: "/etc/kibana/"

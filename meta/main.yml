@@ -1,0 +1,25 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: apolloclark
+  description: Install and configure Elastic Kibana
+  company: "Apollo Clark"
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.2
+  platforms:
+    - name: Ubuntu
+      versions:
+      - all
+    - name: Debian
+      versions:
+      - all
+  galaxy_tags:
+    - monitoring
+    - metrics
+    - logging
+    - security
+    - devopssec
+    - elastic
+    - elk
+    - kibana
