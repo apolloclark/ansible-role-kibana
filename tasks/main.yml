@@ -51,6 +51,12 @@
   apt: deb=/opt/kibana.deb
   when: (kibana_combined.version != '5.x')
 
+# http://docs.ansible.com/ansible/latest/service_module.html
+- name: Make sure Kibana autostarts
+  service:
+    name: kibana
+    enabled: yes
+
 # http://docs.ansible.com/ansible/latest/file_module.html
 - name: Create the Kibana logging directory
   file:
@@ -75,6 +81,7 @@
     owner: root
     group: root
     mode: 0644
+  when: "kibana_combined.install_only != 'true'"
 
 - name: Restart Kibana
   service:
