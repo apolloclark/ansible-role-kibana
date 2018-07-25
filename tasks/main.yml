@@ -133,7 +133,7 @@
 # https://docs.ansible.com/ansible/latest/modules/pause_module.html
 - name: Wait for Kibana to initialize
   pause:
-    seconds: 120
+    seconds: 60
 
 # - name: Wait for Kibana to become available
   # wait_for:
