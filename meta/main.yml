@@ -3,7 +3,7 @@ dependencies: []
 
 galaxy_info:
   author: apolloclark
-  description: Install and configure Elastic Kibana
+  description: Install and configure Elastic Kibana 5.6 or 6.2
   company: "Apollo Clark"
   license: "license (BSD, MIT)"
   min_ansible_version: 2.2

@@ -1,4 +1,14 @@
 ---
+  # https://docs.ansible.com/ansible/latest/modules/set_fact_module.html
+- name: Get the simplified major.minor version string
+  set_fact:
+    version_simple: "{{ kibana.version | regex_replace('^([0-9])\\.([0-9]*).*', '\\1.\\2') }}"
+
+# https://docs.ansible.com/ansible/latest/modules/include_vars_module.html
+- name: Include defaults for configuration, per the installed version.
+  include_vars:
+    file: main-{{ version_simple }}.yml
+
 # http://docs.ansible.com/ansible/latest/set_fact_module.html
 - name: Merge kibana_default and kibana variables
   set_fact:
@@ -11,32 +21,54 @@
     url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
     id: "46095ACC8548582C1A2699A9D27D666CD88E42B4"
     state: present
+  when:
+    - (kibana_combined.install_repo == 'true')
 
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
 # http://docs.ansible.com/ansible/latest/apt_repository_module.html
-- name: Add Elastic 5.x repo (if choosing the 5.x version)
+- name: Add Elastic 5.x repo (if choosing the 5.6.x version)
   apt_repository:
     repo: 'deb https://artifacts.elastic.co/packages/5.x/apt stable main'
     state: present
-  when: "kibana_combined.version == '5.x'"
+  when:
+    - (kibana_combined.version is version('5.6', '>='))
+    - (kibana_combined.version is version('6', '<'))
+    - (kibana_combined.install_repo == 'true')
   
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
+# http://docs.ansible.com/ansible/latest/apt_repository_module.html
+- name: Add Elastic 6.x repo (if choosing the 6.x version)
+  apt_repository:
+    repo: 'deb https://artifacts.elastic.co/packages/6.x/apt stable main'
+    state: present
+  when:
+    - (kibana_combined.version is version('6', '>='))
+    - (kibana_combined.version is version('7', '<'))
+    - (kibana_combined.install_repo == 'true')
+    
   # https://www.elastic.co/guide/en/elasticsearch/reference/2.4/setup-repositories.html
   # https://packages.elastic.co/elasticsearch/2.x/debian
 
+# https://docs.ansible.com/ansible/latest/modules/apt_module.html
 - name: Update apt cache
   apt: update_cache=yes
-  when: (kibana_combined.version == '5.x')
+  when:
+    - (kibana_combined.install_repo == 'true')
 
-- name: Install from repo (if choosing the 5.x version)
+# https://docs.ansible.com/ansible/latest/modules/apt_module.html
+- name: Install from repo (if choosing the 5.6.x or 6.x version)
   apt:
-    name: kibana
+    name: "kibana={{ kibana_combined.version }}"
     state: installed
-  when: (kibana_combined.version == '5.x')
+  when:
+    - (kibana_combined.version is version('5.6', '>='))
+    - (kibana_combined.version is version('7', '<'))
 
 - name: Get the platform (i386 or amd64) of the virtual machine
   command: dpkg --print-architecture
   register: print_architecture
 
+  # https://docs.ansible.com/ansible/latest/modules/set_fact_module.html
 - name: And set the actual platform value as a variable
   set_fact:
     platform: "{{ print_architecture.stdout }}"
@@ -45,11 +77,14 @@
   get_url:
     url={{ elastic_url }}/downloads/kibana/kibana-{{ kibana_combined.version }}-{{ platform }}.deb
     dest=/opt/kibana.deb
-  when: (kibana_combined.version != '5.x')
+  when:
+    - (kibana_combined.version is version('5.6', '<'))
 
+# https://docs.ansible.com/ansible/latest/modules/apt_module.html
 - name: Install from deb (if choosing a specific version)
   apt: deb=/opt/kibana.deb
-  when: (kibana_combined.version != '5.x')
+  when:
+    - (kibana_combined.version is version('5.6', '<'))
 
 # http://docs.ansible.com/ansible/latest/service_module.html
 - name: Make sure Kibana autostarts
@@ -76,7 +111,7 @@
 # http://docs.ansible.com/ansible/latest/template_module.html
 - name: Copy config file
   template:
-    src: "kibana.yml"
+    src: "kibana-{{ version_simple }}.yml"
     dest: "{{ kibana_combined.config_include_dir }}/kibana.yml"
     owner: root
     group: root
@@ -87,7 +122,18 @@
   service:
     name: "{{ kibana_combined.daemon }}"
     state: restarted
-    sleep: 15
+
+# http://docs.ansible.com/ansible/latest/service_module.html
+- name: Ensure that the service is running
+  service: 
+    name: kibana
+    state: started
+    enabled: yes
+
+# https://docs.ansible.com/ansible/latest/modules/pause_module.html
+- name: Wait for Kibana to initialize
+  pause:
+    seconds: 120
 
 # - name: Wait for Kibana to become available
   # wait_for:
