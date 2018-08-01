@@ -8,8 +8,8 @@ kibana_defaults:
   daemon: "kibana"
   version: "6.2.0"
   config_include_dir: "/etc/kibana/"
-  install_only: "false"
-  install_repo: "true"
+  install_only: false
+  install_repo: true
 
   server:
     port: 5601

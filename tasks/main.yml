@@ -1,5 +1,5 @@
 ---
-  # https://docs.ansible.com/ansible/latest/modules/set_fact_module.html
+# https://docs.ansible.com/ansible/latest/modules/set_fact_module.html
 - name: Get the simplified major.minor version string
   set_fact:
     version_simple: "{{ kibana.version | regex_replace('^([0-9])\\.([0-9]*).*', '\\1.\\2') }}"
@@ -14,7 +14,6 @@
   set_fact:
     kibana_combined: "{{ kibana_defaults | combine(kibana, recursive=True) }}"
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
 # http://docs.ansible.com/ansible/latest/apt_key_module.html
 - name: Add repository key
   apt_key:
@@ -22,54 +21,50 @@
     id: "46095ACC8548582C1A2699A9D27D666CD88E42B4"
     state: present
   when:
-    - (kibana_combined.install_repo == 'true')
+    - kibana_combined.install_repo
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
 # http://docs.ansible.com/ansible/latest/apt_repository_module.html
-- name: Add Elastic 5.x repo (if choosing the 5.6.x version)
+- name: Add Elastic 5.x repo (if choosing a 5.6.x version)
   apt_repository:
     repo: 'deb https://artifacts.elastic.co/packages/5.x/apt stable main'
     state: present
   when:
-    - (kibana_combined.version is version('5.6', '>='))
-    - (kibana_combined.version is version('6', '<'))
-    - (kibana_combined.install_repo == 'true')
-  
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
+    - kibana_combined.version is version('5.6', '>=')
+    - kibana_combined.version is version('6', '<')
+    - kibana_combined.install_repo
+
 # http://docs.ansible.com/ansible/latest/apt_repository_module.html
 - name: Add Elastic 6.x repo (if choosing the 6.x version)
   apt_repository:
     repo: 'deb https://artifacts.elastic.co/packages/6.x/apt stable main'
     state: present
   when:
-    - (kibana_combined.version is version('6', '>='))
-    - (kibana_combined.version is version('7', '<'))
-    - (kibana_combined.install_repo == 'true')
-    
-  # https://www.elastic.co/guide/en/elasticsearch/reference/2.4/setup-repositories.html
-  # https://packages.elastic.co/elasticsearch/2.x/debian
+    - kibana_combined.version is version('6', '>=')
+    - kibana_combined.version is version('7', '<')
+    - kibana_combined.install_repo
 
 # https://docs.ansible.com/ansible/latest/modules/apt_module.html
 - name: Update apt cache
   apt: update_cache=yes
   when:
-    - (kibana_combined.install_repo == 'true')
+    - kibana_combined.install_repo
 
 # https://docs.ansible.com/ansible/latest/modules/apt_module.html
 - name: Install from repo (if choosing the 5.6.x or 6.x version)
   apt:
     name: "kibana={{ kibana_combined.version }}"
-    state: installed
+    state: present
   when:
-    - (kibana_combined.version is version('5.6', '>='))
-    - (kibana_combined.version is version('7', '<'))
+    - kibana_combined.version is version('5.6', '>=')
+    - kibana_combined.version is version('7', '<')
+    - kibana_combined.install_repo
 
 - name: Get the platform (i386 or amd64) of the virtual machine
   command: dpkg --print-architecture
   register: print_architecture
 
-  # https://docs.ansible.com/ansible/latest/modules/set_fact_module.html
-- name: And set the actual platform value as a variable
+# https://docs.ansible.com/ansible/latest/modules/set_fact_module.html
+- name: Set the platform value as a variable
   set_fact:
     platform: "{{ print_architecture.stdout }}"
 
@@ -78,16 +73,16 @@
     url={{ elastic_url }}/downloads/kibana/kibana-{{ kibana_combined.version }}-{{ platform }}.deb
     dest=/opt/kibana.deb
   when:
-    - (kibana_combined.version is version('5.6', '<'))
+    - kibana_combined.version is version('5.6', '<')
 
 # https://docs.ansible.com/ansible/latest/modules/apt_module.html
 - name: Install from deb (if choosing a specific version)
   apt: deb=/opt/kibana.deb
   when:
-    - (kibana_combined.version is version('5.6', '<'))
+    - kibana_combined.version is version('5.6', '<')
 
 # http://docs.ansible.com/ansible/latest/service_module.html
-- name: Make sure Kibana autostarts
+- name: Ensure Kibana auto-starts
   service:
     name: kibana
     enabled: yes
@@ -116,7 +111,8 @@
     owner: root
     group: root
     mode: 0644
-  when: "kibana_combined.install_only != 'true'"
+  when:
+    - not kibana_combined.install_only
 
 - name: Restart Kibana
   service:
