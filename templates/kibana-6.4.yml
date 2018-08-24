@@ -1,7 +1,7 @@
 ############################# Kibana ######################################
 #
-# https://www.elastic.co/guide/en/kibana/6.3/settings.html
-# https://github.com/elastic/kibana/blob/6.3/config/kibana.yml
+# https://www.elastic.co/guide/en/kibana/6.4/settings.html
+# https://github.com/elastic/kibana/blob/6.4/config/kibana.yml
 #
 server:
 

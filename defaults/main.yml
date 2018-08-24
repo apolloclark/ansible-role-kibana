@@ -6,4 +6,4 @@ elastic_url: "https://artifacts.elastic.co"
 
 # Overload variables using the dict named kibana
 kibana:
-  version: "6.2.0"
+  version: "6.4.0"
