@@ -118,6 +118,8 @@
   service:
     name: "{{ kibana_combined.daemon }}"
     state: restarted
+  when:
+    - not kibana_combined.install_only
 
 # http://docs.ansible.com/ansible/latest/service_module.html
 - name: Ensure that the service is running
@@ -125,13 +127,19 @@
     name: kibana
     state: started
     enabled: yes
+  when:
+    - not kibana_combined.install_only
 
 # https://docs.ansible.com/ansible/latest/modules/pause_module.html
 - name: Wait for Kibana to initialize
   pause:
     seconds: 60
+  when:
+    - not kibana_combined.install_only
 
 # - name: Wait for Kibana to become available
   # wait_for:
     # port: 5601
     # delay: 5
+  # when:
+    # - not kibana_combined.install_only
