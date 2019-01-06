@@ -4,17 +4,14 @@ dependencies: []
 galaxy_info:
   role_name: kibana
   author: apolloclark
-  description: Install and configure Elastic Kibana 5.6 or 6.2
+  description: Install and configure Elastic Kibana
   company: "Apollo Clark"
   license: "license (BSD, MIT)"
   min_ansible_version: 2.2
   platforms:
     - name: Ubuntu
       versions:
-      - all
-    - name: Debian
-      versions:
-      - all
+      - xenial
   galaxy_tags:
     - monitoring
     - metrics
