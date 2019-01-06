@@ -44,8 +44,6 @@ server:
 
 
 
-
-
 kibana:
 
 {% if 'index' in kibana_combined.kibana %}
@@ -58,8 +56,6 @@ kibana:
   # The default application to load.
   defaultAppId: "{{ kibana_combined.kibana.defaultAppId }}"
 {% endif %}
-
-
 
 
 
@@ -138,13 +134,10 @@ elasticsearch:
 
 
 
-
-
 {% if 'pid' in kibana_combined %}
 # Specifies the path where Kibana creates the process ID file.
 pid.file: "{{ kibana_combined.pid.file }}"
 {% endif %}
-
 
 {% if 'interval' in kibana_combined.ops %}
 # Set the interval in milliseconds to sample system and process performance
@@ -152,14 +145,11 @@ pid.file: "{{ kibana_combined.pid.file }}"
 ops.interval: {{ kibana_combined.ops.interval }}
 {% endif %}
 
-
 {% if 'defaultLocale' in kibana_combined.i18n %}
 # The default locale. This locale can be used in certain circumstances to substitute any missing
 # translations.
 i18n.defaultLocale: "{{ kibana_combined.i18n.defaultLocale }}"
 {% endif %}
-
-
 
 
 
