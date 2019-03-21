@@ -13,7 +13,7 @@ Default values are in `defaults/main.yml`. You can overload the variables by
 creating a dictionary called "kibana", ex:
 
     kibana:
-      version: 5.6.2
+      version: 6.6.2
 
 ## Dependencies
 

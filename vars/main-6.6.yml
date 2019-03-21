@@ -1,0 +1,51 @@
+---
+# https://www.elastic.co/guide/en/beats/elasticsearch/6.6/elasticsearch-overview.html
+# https://www.elastic.co/guide/en/beats/elasticsearch/6.6/configuring-howto-elasticsearch.html
+# https://www.elastic.co/guide/en/beats/elasticsearch/6.6/elasticsearch-configuration-options.html
+elastic_url: "https://artifacts.elastic.co"
+
+kibana_defaults:
+  daemon: "kibana"
+  version: "6.6.0"
+  config_include_dir: "/etc/kibana/"
+  install_only: false
+  install_repo: true
+
+  server:
+    port: 5601
+    host: "0.0.0.0"
+    basePath: ""
+    maxPayloadBytes: 1048576
+    name: "vagrant"
+    
+  kibana:
+    index: ".kibana"
+    defaultAppId: "home"
+    
+  elasticsearch:
+    url: "http://127.0.0.1:9200"
+    preserveHost: "true"
+    # username: ""
+    # password: ""
+    pingTimeout: 1500
+    requestTimeout: 30000
+    requestHeadersWhitelist: '[ authorization ]'
+    customHeaders: '{}'
+    shardTimeout: 0
+    startupTimeout: 5000
+    
+  # pid:
+    # file: "/var/run/kibana.pid"
+    
+  ops:
+    interval: 5000
+    
+  i18n:
+    defaultLocale: "en"
+
+  # https://www.elastic.co/guide/en/beats/filebeat/6.6/configuration-logging.html
+  logging:
+    dest: "/var/log/kibana/kibana.log"
+    silent: "false"
+    quit: "false"
+    verbose: "false"
