@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: ${PACKAGE:-package}-${DOCKER_INST_NAME_SUFFIX:-ubuntu_bionic}
+    image: ${DOCKER_IMAGE_BASE:-ubuntu:bionic}
+    groups:
+      - ${PACKAGE:-package}
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      ${PACKAGE:-package}:
+        ${PACKAGE:-package}:
+          version: ${PACKAGE_VERSION:-7.0.0}
+          install_only: true
+  lint:
+    name: ansible-lint
+verifier:
+  name: goss
+  lint:
+    name: yamllint

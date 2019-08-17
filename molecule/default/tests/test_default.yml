@@ -1,0 +1,19 @@
+---
+package:
+  {{ kibana_combined.daemon }}:
+    installed: true
+    versions:
+      - {{ kibana_combined.version }}
+
+service:
+  {{ kibana_combined.daemon }}:
+    enabled: true
+    running: false
+
+command:
+  /usr/share/kibana/bin/kibana --version --allow-root:
+    exit-status: 0
+    stderr: []
+    stdout:
+      - "{{ kibana_combined.version }}"
+    timeout: 10000

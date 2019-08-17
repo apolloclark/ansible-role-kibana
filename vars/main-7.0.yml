@@ -1,12 +1,12 @@
 ---
-# https://www.elastic.co/guide/en/beats/elasticsearch/6.6/elasticsearch-overview.html
-# https://www.elastic.co/guide/en/beats/elasticsearch/6.6/configuring-howto-elasticsearch.html
-# https://www.elastic.co/guide/en/beats/elasticsearch/6.6/elasticsearch-configuration-options.html
+# https://www.elastic.co/guide/en/beats/elasticsearch/7.0/elasticsearch-overview.html
+# https://www.elastic.co/guide/en/beats/elasticsearch/7.0/configuring-howto-elasticsearch.html
+# https://www.elastic.co/guide/en/beats/elasticsearch/7.0/elasticsearch-configuration-options.html
 elastic_url: "https://artifacts.elastic.co"
 
 kibana_defaults:
   daemon: "kibana"
-  version: "6.6.0"
+  version: "7.0.0"
   config_include_dir: "/etc/kibana/"
   install_only: false
   install_repo: true
@@ -40,7 +40,7 @@ kibana_defaults:
   i18n:
     defaultLocale: "en"
 
-  # https://www.elastic.co/guide/en/beats/filebeat/6.6/configuration-logging.html
+  # https://www.elastic.co/guide/en/beats/filebeat/7.0/configuration-logging.html
   logging:
     dest: "/var/log/kibana/kibana.log"
     silent: "false"

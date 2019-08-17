@@ -1,7 +1,14 @@
 # Ansible Role: kibana
 
-Ansible Role to install and configure Elastic Kibana for Ubuntu.
-
+Ansible Role to install and configure Elastic Kibana for:
+- Ubuntu 18.04 Bionic LTS
+- Ubuntu 16.04 Xenial LTS
+- Debian 10 Buster
+- Debian 9 Stretch
+- RHEL 8 UBI
+- RHEL 7 UBI
+- CentOS 7
+- Amazon Linux 2
 
 ## Requirements
 
@@ -13,7 +20,7 @@ Default values are in `defaults/main.yml`. You can overload the variables by
 creating a dictionary called "kibana", ex:
 
     kibana:
-      version: 6.6.2
+      version: 7.3.0
 
 ## Dependencies
 

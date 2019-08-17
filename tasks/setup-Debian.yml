@@ -1,0 +1,74 @@
+---
+
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
+# http://docs.ansible.com/ansible/latest/apt_key_module.html
+- name: Debian, Add repository key
+  apt_key:
+    url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    id: "46095ACC8548582C1A2699A9D27D666CD88E42B4"
+    state: present
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 5
+  when:
+    - kibana_combined.install_repo
+
+# http://docs.ansible.com/ansible/latest/apt_repository_module.html
+- name: Debian, Add Elastic 5.x repo (if choosing a 5.6.x version)
+  apt_repository:
+    repo: 'deb https://artifacts.elastic.co/packages/5.x/apt stable main'
+    state: present
+  when:
+    - kibana_combined.version is version('5.6', '>=')
+    - kibana_combined.version is version('6', '<')
+    - kibana_combined.install_repo
+
+# http://docs.ansible.com/ansible/latest/apt_repository_module.html
+- name: Debian, Add Elastic 6.x repo (if choosing a 6.x version)
+  apt_repository:
+    repo: 'deb https://artifacts.elastic.co/packages/6.x/apt stable main'
+    state: present
+  when:
+    - kibana_combined.version is version('6', '>=')
+    - kibana_combined.version is version('7', '<')
+    - kibana_combined.install_repo
+
+# http://docs.ansible.com/ansible/latest/apt_repository_module.html
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
+- name: Debian, Add Elastic 7.x repo (if choosing a 7.x version)
+  apt_repository:
+    repo: 'deb https://artifacts.elastic.co/packages/7.x/apt stable main'
+    state: present
+  when:
+    - kibana_combined.version is version('7', '>=')
+    - kibana_combined.version is version('8', '<')
+    - kibana_combined.install_repo
+
+# https://docs.ansible.com/ansible/latest/modules/apt_module.html
+- name: Debian, Install from repo (if choosing a 5.x or 6.x version)
+  apt:
+    name: "kibana={{ kibana_combined.version }}"
+    state: present
+    update_cache: true
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 5
+  when:
+    - kibana_combined.version is version('5.6', '>=')
+    - kibana_combined.version is version('8', '<')
+    - kibana_combined.install_repo
+
+- name: Debian, Download deb (if choosing a specific version)
+  get_url:
+    url={{ elastic_url }}/downloads/kibana/kibana-{{ kibana_combined.version }}.deb
+    dest=/opt/kibana.deb
+  when:
+    - kibana_combined.version is version('5.6', '<')
+
+# https://docs.ansible.com/ansible/latest/modules/apt_module.html
+- name: Debian, Install from deb (if choosing a specific version)
+  apt: deb=/opt/kibana.deb
+  when:
+    - kibana_combined.version is version('5.6', '<')

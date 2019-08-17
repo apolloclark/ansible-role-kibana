@@ -1,0 +1,82 @@
+---
+
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
+# http://docs.ansible.com/ansible/latest/rpm_key_module.html
+- name: RedHat, Add repository key
+  rpm_key:
+    key: "https://packages.elastic.co/GPG-KEY-elasticsearch"
+    state: present
+  register: task_result
+  until: task_result is success
+  retries: 3
+  delay: 5
+  when:
+    - kibana_combined.install_repo
+
+# http://docs.ansible.com/ansible/latest/yum_repository_module.html
+- name: RedHat, Add Elastic 5.x repo (if choosing a 5.6.x version)
+  yum_repository:
+    name: 'elastic-5.x'
+    description: 'Elasticsearch repository for 5.x packages'
+    baseurl: 'https://artifacts.elastic.co/packages/5.x/yum'
+    state: present
+  when:
+    - kibana_combined.version is version('5.6', '>=')
+    - kibana_combined.version is version('6', '<')
+    - kibana_combined.install_repo
+
+# http://docs.ansible.com/ansible/latest/yum_repository_module.html
+- name: RedHat, Add Elastic 6.x repo (if choosing a 6.x version)
+  yum_repository:
+    name: 'elastic-6.x'
+    description: 'Elastic repository for 6.x packages'
+    baseurl: 'https://artifacts.elastic.co/packages/6.x/yum'
+    gpgcheck: 1
+    gpgkey: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
+    enabled: 1
+    state: present
+  when:
+    - kibana_combined.version is version('6', '>=')
+    - kibana_combined.version is version('7', '<')
+    - kibana_combined.install_repo
+
+# http://docs.ansible.com/ansible/latest/yum_repository_module.html
+- name: RedHat, Add Elastic 7.x repo (if choosing a 7.x version)
+  yum_repository:
+    name: 'elastic-7.x'
+    description: 'Elastic repository for 7.x packages'
+    baseurl: 'https://artifacts.elastic.co/packages/7.x/yum'
+    gpgcheck: 1
+    gpgkey: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
+    enabled: 1
+    state: present
+  when:
+    - kibana_combined.version is version('7', '>=')
+    - kibana_combined.version is version('8', '<')
+    - kibana_combined.install_repo
+
+# https://docs.ansible.com/ansible/latest/modules/yum_module.html
+- name: RedHat, Install from repo (if choosing a 5.x, 6.x, or 7.x version)
+  yum:
+    name: "kibana-{{ kibana_combined.version }}"
+    allow_downgrade: true
+    update_cache: yes
+    state: installed
+  when:
+    - kibana_combined.version is version('5.6', '>=')
+    - kibana_combined.version is version('8', '<')
+    - kibana_combined.install_repo
+
+- name: RedHat, Download rpm (if choosing an older version)
+  get_url:
+    url={{ elastic_url }}/downloads/kibana/kibana-{{ kibana_combined.version }}.rpm
+    dest=/opt/kibana.rpm
+  when:
+    - kibana_combined.version is version('5.6', '<')
+
+# https://docs.ansible.com/ansible/latest/modules/yum_module.html
+- name: RedHat, Install from rpm (if choosing a specific version)
+  yum:
+    name: /opt/kibana.deb
+  when:
+    - kibana_combined.version is version('5.6', '<')

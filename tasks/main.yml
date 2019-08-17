@@ -14,76 +14,20 @@
   set_fact:
     kibana_combined: "{{ kibana_defaults | combine(kibana, recursive=True) }}"
 
-# http://docs.ansible.com/ansible/latest/apt_key_module.html
-- name: Add repository key
-  apt_key:
-    url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
-    id: "46095ACC8548582C1A2699A9D27D666CD88E42B4"
-    state: present
+# Include OS-specific installation tasks.
+- include_tasks: setup-RedHat.yml
   when:
-    - kibana_combined.install_repo
+    - ansible_os_family == 'RedHat'
 
-# http://docs.ansible.com/ansible/latest/apt_repository_module.html
-- name: Add Elastic 5.x repo (if choosing a 5.6.x version)
-  apt_repository:
-    repo: 'deb https://artifacts.elastic.co/packages/5.x/apt stable main'
-    state: present
+- include_tasks: setup-Debian.yml
   when:
-    - kibana_combined.version is version('5.6', '>=')
-    - kibana_combined.version is version('6', '<')
-    - kibana_combined.install_repo
+    - ansible_os_family == 'Debian'
 
-# http://docs.ansible.com/ansible/latest/apt_repository_module.html
-- name: Add Elastic 6.x repo (if choosing the 6.x version)
-  apt_repository:
-    repo: 'deb https://artifacts.elastic.co/packages/6.x/apt stable main'
-    state: present
-  when:
-    - kibana_combined.version is version('6', '>=')
-    - kibana_combined.version is version('7', '<')
-    - kibana_combined.install_repo
 
-# https://docs.ansible.com/ansible/latest/modules/apt_module.html
-- name: Update apt cache
-  apt: update_cache=yes
-  when:
-    - kibana_combined.install_repo
-
-# https://docs.ansible.com/ansible/latest/modules/apt_module.html
-- name: Install from repo (if choosing the 5.6.x or 6.x version)
-  apt:
-    name: "kibana={{ kibana_combined.version }}"
-    state: present
-  when:
-    - kibana_combined.version is version('5.6', '>=')
-    - kibana_combined.version is version('7', '<')
-    - kibana_combined.install_repo
-
-- name: Get the platform (i386 or amd64) of the virtual machine
-  command: dpkg --print-architecture
-  register: print_architecture
-
-# https://docs.ansible.com/ansible/latest/modules/set_fact_module.html
-- name: Set the platform value as a variable
-  set_fact:
-    platform: "{{ print_architecture.stdout }}"
-
-- name: Download deb (if choosing a specific version)
-  get_url:
-    url={{ elastic_url }}/downloads/kibana/kibana-{{ kibana_combined.version }}-{{ platform }}.deb
-    dest=/opt/kibana.deb
-  when:
-    - kibana_combined.version is version('5.6', '<')
-
-# https://docs.ansible.com/ansible/latest/modules/apt_module.html
-- name: Install from deb (if choosing a specific version)
-  apt: deb=/opt/kibana.deb
-  when:
-    - kibana_combined.version is version('5.6', '<')
 
 # http://docs.ansible.com/ansible/latest/service_module.html
 - name: Ensure Kibana auto-starts
-  service:
+  systemd:
     name: kibana
     enabled: yes
 
@@ -95,18 +39,10 @@
     owner: kibana
     group: kibana
 
-# http://docs.ansible.com/ansible/latest/file_module.html
-- name: Create Kibana PID file
-  file:
-    path: /var/run/kibana.pid
-    state: touch
-    owner: kibana
-    group: kibana
-
 # http://docs.ansible.com/ansible/latest/template_module.html
 - name: Copy config file
   template:
-    src: "kibana-{{ version_simple }}.yml"
+    src: "kibana-{{ version_simple }}.j2"
     dest: "{{ kibana_combined.config_include_dir }}/kibana.yml"
     owner: root
     group: root
@@ -115,7 +51,7 @@
     - not kibana_combined.install_only
 
 - name: Restart Kibana
-  service:
+  systemd:
     name: "{{ kibana_combined.daemon }}"
     state: restarted
   when:
@@ -123,7 +59,7 @@
 
 # http://docs.ansible.com/ansible/latest/service_module.html
 - name: Ensure that the service is running
-  service:
+  systemd:
     name: kibana
     state: started
     enabled: yes
@@ -136,10 +72,3 @@
     seconds: 60
   when:
     - not kibana_combined.install_only
-
-# - name: Wait for Kibana to become available
-  # wait_for:
-    # port: 5601
-    # delay: 5
-  # when:
-    # - not kibana_combined.install_only

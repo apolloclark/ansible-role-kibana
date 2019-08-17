@@ -5,5 +5,9 @@
 elastic_url: "https://artifacts.elastic.co"
 
 # Overload variables using the dict named kibana
-kibana:
-  version: "6.5.4"
+kibana_defaults:
+  daemon: "kibana"
+  version: "7.3.0"
+  config_include_dir: "/etc/kibana/"
+  install_only: false
+  install_repo: true

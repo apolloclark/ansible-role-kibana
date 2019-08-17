@@ -17,11 +17,11 @@ kibana_defaults:
     basePath: ""
     maxPayloadBytes: 1048576
     name: "vagrant"
-    
+
   kibana:
     index: ".kibana"
     defaultAppId: "home"
-    
+
   elasticsearch:
     url: "http://127.0.0.1:9200"
     preserveHost: "true"
@@ -33,13 +33,10 @@ kibana_defaults:
     customHeaders: '{}'
     shardTimeout: 0
     startupTimeout: 5000
-    
-  # pid:
-    # file: "/var/run/kibana.pid"
-    
+
   ops:
     interval: 5000
-    
+
   i18n:
     defaultLocale: "en"
 
