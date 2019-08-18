@@ -7,12 +7,12 @@ galaxy_info:
   description: Install and configure Elastic Kibana
   company: "Apollo Clark"
   license: "license (BSD, MIT)"
-  min_ansible_version: 2.2
+  min_ansible_version: 2.8.0
   platforms:
     - name: Ubuntu
       versions:
-        - xenial
         - bionic
+        - xenial
     - name: Debian
       versions:
         - buster
@@ -21,6 +21,9 @@ galaxy_info:
       versions:
         - 8
         - 7
+    - name: Amazon
+      versions:
+        - Candidate
   galaxy_tags:
     - monitoring
     - metrics

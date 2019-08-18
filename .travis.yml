@@ -43,12 +43,12 @@ env:
       DOCKER_INST_NAME_SUFFIX=ubuntu_16.04
       PACKAGE_VERSION=7.3.0
 
-    # Debian 10
+    # Debian 10 Buster
     - DOCKER_IMAGE_BASE=apolloclark/openjdk:11-debian10
       DOCKER_INST_NAME_SUFFIX=debian10
       PACKAGE_VERSION=7.3.0
 
-    # Debian 9
+    # Debian 9 Stretch
     - DOCKER_IMAGE_BASE=apolloclark/openjdk:11-debian9
       DOCKER_INST_NAME_SUFFIX=debian9
       PACKAGE_VERSION=7.3.0
@@ -85,12 +85,12 @@ env:
       DOCKER_INST_NAME_SUFFIX=ubuntu_16.04
       PACKAGE_VERSION=6.8.2
 
-    # Debian 10
+    # Debian 10 Buster
     - DOCKER_IMAGE_BASE=apolloclark/openjdk:11-debian10
       DOCKER_INST_NAME_SUFFIX=debian10
       PACKAGE_VERSION=6.8.2
 
-    # Debian 9
+    # Debian 9 Stretch
     - DOCKER_IMAGE_BASE=apolloclark/openjdk:11-debian9
       DOCKER_INST_NAME_SUFFIX=debian9
       PACKAGE_VERSION=6.8.2

@@ -28,12 +28,12 @@ export DOCKER_IMAGE_BASE=amazonlinux:2
 export DOCKER_INST_NAME_SUFFIX=amzlinux_2
 pipenv run molecule test --all
 
-# Ubuntu Bionic
+# Ubuntu 18.04 Bionic
 export DOCKER_IMAGE_BASE=ubuntu:18.04
 export DOCKER_INST_NAME_SUFFIX=ubuntu_18.04
 pipenv run molecule test --all
 
-# Ubuntu Xenial
+# Ubuntu 16.04 Xenial
 export DOCKER_IMAGE_BASE=ubuntu:16.04
 export DOCKER_INST_NAME_SUFFIX=ubuntu_16.04
 pipenv run molecule test --all

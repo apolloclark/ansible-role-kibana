@@ -1,5 +1,7 @@
 # Ansible Role: kibana
 
+[![Build Status](https://travis-ci.org/apolloclark/ansible-role-kibana.svg?branch=master)](https://travis-ci.org/apolloclark/ansible-role-kibana)
+
 Ansible Role to install and configure Elastic Kibana for:
 - Ubuntu 18.04 Bionic LTS
 - Ubuntu 16.04 Xenial LTS
